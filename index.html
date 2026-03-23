@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Student Data</title>
+    <!-- STYLE -->
+    <style>
+        body {
+            font-family: Arial;
+            text-align: center;
+        }
+
+        table {
+            border-collapse: collapse;
+            width: 60%;
+            margin: auto;
+        }
+
+        th, td {
+            padding: 10px;
+            border: 1px solid black;
+        }
+
+        th {
+            background-color: #333;
+            color: white;
+        }
+
+        tr:hover {
+            background-color: #f2f2f2;
+        }
+
+        h3 {
+            margin-top: 20px;
+        }
+        input {
+            padding: 8px;
+            margin: 5px;
+        }
+
+        button {
+            padding: 8px 15px;
+            cursor: pointer;
+        }
+    </style>
+
+</head>
+<body>
+
+    <h1>*Student Data*</h1>
+    <!-- FORM -->
+    <input type="text" id="name" placeholder="Enter Name">
+    <input type="number" id="age" placeholder="Enter Age">
+    <input type="text" id="city" placeholder="Enter City">
+    <input type="tel" id="contact" placeholder="Enter Contact No.">
+    <button onclick="addStudent()">Add Student</button>
+
+    <!-- TABLE -->
+    <table id="studentTable">
+        <tr>
+            <th>Name</th>
+            <th>Age</th>
+            <th>City</th>
+            <th>Contact No.</th>
+            <th>Action</th>
+        </tr>
+        
+    </table>
+    <br/>
+    
+
+    <!-- JAVASCRIPT -->
+    <script>
+    let students = JSON.parse(localStorage.getItem("students")) || [];
+
+// Load data on page load
+window.onload = function() {
+    displayStudents();
+};    
+    function addStudent() {
+    let name = document.getElementById("name").value;
+    let age = document.getElementById("age").value;
+    let city = document.getElementById("city").value;
+    let contact = document.getElementById("contact").value;
+
+    if(name === "" || age === "" || city === "" || contact === "") {
+        alert("Fill all fields");
+        return;
+    }
+
+    let student = { name, age, city, contact };
+    students.push(student);
+
+    localStorage.setItem("students", JSON.stringify(students));
+
+    displayStudents();
+
+    // clear inputs
+    document.getElementById("name").value = "";
+    document.getElementById("age").value = "";
+    document.getElementById("city").value = "";
+    document.getElementById("contact").value = "";
+}
+
+function displayStudents() {
+    let table = document.getElementById("studentTable");
+
+    // clear table (except header)
+    table.innerHTML = `
+        <tr>
+            <th>Name</th>
+            <th>Age</th>
+            <th>City</th>
+            <th>Contact No.</th>    
+            <th>Action</th>
+        </tr>
+    `;
+
+    students.forEach((s, index) => {
+        let row = table.insertRow();
+
+        row.insertCell(0).innerHTML = s.name;
+        row.insertCell(1).innerHTML = s.age;
+        row.insertCell(2).innerHTML = s.city;
+        row.insertCell(3).innerHTML = s.contact;
+
+        row.insertCell(4).innerHTML = 
+            '<button onclick="editStudent(' + index + ')">Edit</button>' +
+            '<button onclick="deleteStudent(' + index + ')">Delete</button>';
+    });
+}
+
+function deleteStudent(index) {
+    students.splice(index, 1);
+    localStorage.setItem("students", JSON.stringify(students));
+    displayStudents();
+}
+
+function editStudent(index) {
+    let s = students[index];
+
+    document.getElementById("name").value = s.name;
+    document.getElementById("age").value = s.age;
+    document.getElementById("city").value = s.city;
+    document.getElementById("contact").value = s.contact;
+
+    students.splice(index, 1);
+    localStorage.setItem("students", JSON.stringify(students));
+    displayStudents();
+
+}
+    </script>
+</body>
+</html>
